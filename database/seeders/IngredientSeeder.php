@@ -17,9 +17,7 @@ class IngredientSeeder extends Seeder
             ['name' => 'Pomodoro', 'price' => 1.00],
             ['name' => 'Mozzarella', 'price' => 1.00],
             ['name' => 'Speck', 'price' => 2.00],
-            ['name' => 'Cipolla', 'price' => 0.50],
-            ['name' => 'Prosciutto', 'price' => 1.50],
-            ['name' => 'Funghi', 'price' => 1.20],
+            ['name' => 'Cipolla', 'price' => 0.50],      
         ];
 
         foreach ($ingredients as $ingredient) {

@@ -18,7 +18,7 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('pizzas.index') ? 'active' : '' }}"
                         href="{{ route('pizzas.index') }}">
-                        Pizzas
+                        {{ __('Pizza') }}
                     </a>
                 </li>
 

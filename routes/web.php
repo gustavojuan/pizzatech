@@ -17,7 +17,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::prefix('dashboard')->group(function () {
-        Route::resource('pizzas', PizzaController::class)->only(['index', 'show']);
+        Route::resource('pizzas', PizzaController::class)->except(['show']);
     });
 });
 

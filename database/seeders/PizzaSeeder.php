@@ -33,8 +33,7 @@ class PizzaSeeder extends Seeder
 
         $pizza2->ingredients()->attach([
             Ingredient::where('name', 'Pomodoro')->first()->id,
-            Ingredient::where('name', 'Mozzarella')->first()->id,
-            Ingredient::where('name', 'Funghi')->first()->id,
+            Ingredient::where('name', 'Mozzarella')->first()->id,            
         ]);
     }
 }

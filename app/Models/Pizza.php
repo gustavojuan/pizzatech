@@ -3,10 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Pizza extends Model
 {
-    protected $fillable = ['name','ingredients','image_url'];
+
+    use SoftDeletes;
+
+    protected $fillable = ['name', 'ingredients', 'image_url'];
+    protected $dates = ['deleted_at'];
 
 
     public function ingredients()
@@ -14,9 +20,13 @@ class Pizza extends Model
         return $this->belongsToMany(Ingredient::class);
     }
 
-    public function calculatePrice(): float
+    protected function calculatedPrice(): Attribute
     {
-        $total = $this->ingredients->sum('price');
-        return $total + ($total * 0.5);
+        return Attribute::get(function () {
+            $total = $this->ingredients->sum('price'); 
+            
+            return $total + ($total * 0.5) .'€';
+        });
     }
+    
 }

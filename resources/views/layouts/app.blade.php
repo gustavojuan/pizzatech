@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,9 +19,23 @@
 
     @stack('styles')
 </head>
+
 <body>
     <div id="app">
         @include('layouts.navigation')
+
+        <div id="pre_header">
+            <div class="container">
+            <div class="row justify-content-center my-2">
+                <div class="col-md-7">
+                    <x-messages></x-messages>
+                </div>
+            </div>
+            </div>
+
+        </div>
+
+
 
         <main class="py-4">
             @yield('content')
@@ -29,4 +44,5 @@
 
     @stack('scripts')
 </body>
+
 </html>
