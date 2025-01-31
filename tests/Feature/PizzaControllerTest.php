@@ -2,12 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\SendPizzaConfirmation;
 use App\Models\Ingredient;
 use App\Models\Pizza;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 use Tests\Traits\AuthenticatedUsers;
@@ -22,25 +24,26 @@ class PizzaControllerTest extends TestCase
      */
     public function test_authenticated_user_can_access_pizza_index_page()
     {
-        $this->authenticateUser();  
-        $ingredients = $this->createIngredients();       
+        $this->authenticateUser();
+        $ingredients = $this->createIngredients();
 
 
         $pizza1 = Pizza::create(['name' => 'Margherita']);
         $pizza1->ingredients()->attach([$ingredients[0]->id, $ingredients[1]->id]);
 
-         $response = $this->get(route('pizzas.index'));
+        $response = $this->get(route('pizzas.index'));
 
-         $response->assertStatus(200);
-         $response->assertViewHas('pizzas');
-         $response->assertViewHas('pizzas', function ($viewPizzas) use ($pizza1) {
-            return $viewPizzas->contains($pizza1); 
+        $response->assertStatus(200);
+        $response->assertViewHas('pizzas');
+        $response->assertViewHas('pizzas', function ($viewPizzas) use ($pizza1) {
+            return $viewPizzas->contains($pizza1);
         });
     }
 
 
-    public function test_it_returns_create_form_with_all_ingredients(){
-        $this->authenticateUser();  
+    public function test_it_returns_create_form_with_all_ingredients()
+    {
+        $this->authenticateUser();
         $this->createIngredients();
 
         $response = $this->get(route('pizzas.create'));
@@ -55,7 +58,7 @@ class PizzaControllerTest extends TestCase
     {
         $user = $this->authenticateUser();
         $ingredients = $this->createIngredients();
-        Storage::fake('public'); 
+        Storage::fake('public');
         $image = UploadedFile::fake()->image('pizza.jpg');
 
         $data = [
@@ -74,68 +77,97 @@ class PizzaControllerTest extends TestCase
     }
 
 
-    public function test_it_updates_pizza(){
-        $user = $this->authenticateUser();    
+    public function test_it_updates_pizza()
+    {
+        $user = $this->authenticateUser();
         $ingredients = $this->createIngredients();
 
-       
+
         $pizza = Pizza::create([
             'name' => 'Margarita Pizza',
         ]);
         $pizza->ingredients()->attach($ingredients[0]);
 
-        Storage::fake('public');  
-        $newImage = UploadedFile::fake()->image('new_pizza.jpg');  
+        Storage::fake('public');
+        $newImage = UploadedFile::fake()->image('new_pizza.jpg');
 
         $data = [
             'name' => 'Updated Margarita Pizza',
-            'ingredients' => [$ingredients[1]->id],  
-            'image' => $newImage,  
+            'ingredients' => [$ingredients[1]->id],
+            'image' => $newImage,
         ];
 
         $response = $this->put(route('pizzas.update', $pizza->id), $data);
 
         $this->assertDatabaseHas('pizzas', [
             'id' => $pizza->id,
-            'name' => 'Updated Margarita Pizza',  
+            'name' => 'Updated Margarita Pizza',
         ]);
 
         $pizza->refresh();
-        $this->assertTrue($pizza->ingredients->contains($ingredients[1]));  
-        $response->assertRedirect(route('pizzas.edit',$pizza->id));
+        $this->assertTrue($pizza->ingredients->contains($ingredients[1]));
+        $response->assertRedirect(route('pizzas.edit', $pizza->id));
 
     }
 
     public function test_it_soft_deletes_pizza()
     {
-        
-        $user = $this->authenticateUser();   
-        $ingredients = $this->createIngredients(); 
+
+        $user = $this->authenticateUser();
+        $ingredients = $this->createIngredients();
         $pizza = Pizza::create([
             'name' => 'Margarita Pizza',
         ]);
         $pizza->ingredients()->attach($ingredients[0]);
 
-        
+
         $this->assertDatabaseHas('pizzas', [
             'id' => $pizza->id,
             'name' => 'Margarita Pizza',
         ]);
 
-       
-        $response = $this->delete(route('pizzas.destroy', $pizza->id));       
+
+        $response = $this->delete(route('pizzas.destroy', $pizza->id));
         $this->assertSoftDeleted('pizzas', [
             'id' => $pizza->id,
             'name' => 'Margarita Pizza',
         ]);
-        
-        $pizza->refresh(); 
-        $this->assertNotNull($pizza->deleted_at);      
+
+        $pizza->refresh();
+        $this->assertNotNull($pizza->deleted_at);
         $response->assertRedirect(route('pizzas.index'));
     }
 
 
-    protected function createIngredients(){
+    public function test_pizza_confirmation_log_is_written()
+    {
+        $user = $this->authenticateUser();
+
+        $ingredients = $this->createIngredients();
+        $pizza = Pizza::create([
+            'name' => 'Margarita Pizza',
+        ]);
+        $pizza->ingredients()->attach($ingredients[0]);
+
+        Log::shouldReceive('info')
+            ->once()
+            ->with('Enviando confirmación para la pizza: Margarita Pizza')
+            ->andReturnNull();
+
+
+        dispatch(new SendPizzaConfirmation($pizza));
+
+
+        Log::shouldHaveReceived('info')
+            ->once()
+            ->with('Enviando confirmación para la pizza: Margarita Pizza');
+    }
+
+
+
+
+    protected function createIngredients()
+    {
         $ingredient1 = Ingredient::create(['name' => 'Tomato', 'price' => 1.50]);
         $ingredient2 = Ingredient::create(['name' => 'Cheese', 'price' => 2.00]);
 
@@ -145,7 +177,7 @@ class PizzaControllerTest extends TestCase
 
 
 
-    
+
 
 
 

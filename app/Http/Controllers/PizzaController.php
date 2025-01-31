@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PizzaCreated;
 use App\Http\Requests\StorePizzaRequest;
 use App\Http\Requests\UpdatePizzaRequest;
 use App\Models\Ingredient;
@@ -44,6 +45,8 @@ class PizzaController extends Controller
         ]);
 
         $pizza->ingredients()->attach($request->ingredients);
+
+        event(new PizzaCreated($pizza));
 
         Cache::forget('pizzas_all');
 
