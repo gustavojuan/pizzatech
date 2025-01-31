@@ -42,6 +42,14 @@
                 <li>{{ __('Acceso autenticado a las rutas protegidas, verificando que solo los usuarios autenticados puedan acceder a las rutas de administración y gestión de pizzas.') }}</li>
             </ul>
             <p>{{ __('Estos tests aseguran que las funcionalidades críticas del sistema estén funcionando correctamente y sin errores.') }}</p>
+            
+            <!-- Información sobre Sail -->
+            <h3>{{ __('El Proyecto está Montado sobre Sail') }}</h3>
+            <p>{{ __('Este proyecto está ejecutándose dentro de un contenedor Docker utilizando Laravel Sail, lo que facilita la configuración del entorno de desarrollo. Sail proporciona una manera sencilla y rápida de configurar las dependencias del proyecto, como la base de datos, el servidor web y otras herramientas necesarias para el desarrollo.') }}</p>
+            <p>{{ __('Para instanciar el proyecto y preparar la base de datos, solo tienes que ejecutar el siguiente comando:') }}</p>
+            <pre><code>sail artisan migrate:fresh --seed</code></pre>
+            <p>{{ __('Este comando limpiará la base de datos, aplicará las migraciones y sembrará los datos de prueba (si están disponibles), dejándola lista para usar.') }}</p>
+            <p>{{ __('Gracias a Sail, el proceso de despliegue y pruebas es más ágil, ya que todo el entorno se puede ejecutar de manera local sin conflictos con otras configuraciones de sistema.') }}</p>
         </div>
     </div>
 </div>
