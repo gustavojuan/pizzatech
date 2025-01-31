@@ -7,6 +7,7 @@ use App\Http\Requests\UpdatePizzaRequest;
 use App\Models\Ingredient;
 use App\Models\Pizza;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class PizzaController extends Controller
 {
@@ -15,7 +16,10 @@ class PizzaController extends Controller
      */
     public function index()
     {
-        $pizzas = Pizza::with('ingredients')->paginate(6);
+        $pizzas = Cache::remember('pizzas_all', 60, function () {
+            return Pizza::with('ingredients')->paginate(10);
+        });
+    
         return view('pizzas.index',compact('pizzas'));
     }
 
@@ -41,6 +45,8 @@ class PizzaController extends Controller
 
         $pizza->ingredients()->attach($request->ingredients);
 
+        Cache::forget('pizzas_all');
+
         return redirect()->route('pizzas.index')->with('success', __('Pizza created successfully.'));
 
     }
@@ -62,6 +68,8 @@ class PizzaController extends Controller
 
         // Obtener todos los ingredientes disponibles para mostrar en el formulario
         $ingredients = Ingredient::all();
+
+        Cache::forget('pizzas_all');
     
         // Retornar la vista de edición con la pizza y los ingredientes
         return view('pizzas.edit', compact('pizza', 'ingredients'));
@@ -84,6 +92,7 @@ class PizzaController extends Controller
             $pizza->image_url = $imagePath;
             $pizza->save();
         }
+        Cache::forget('pizzas_all');
 
         return redirect()->route('pizzas.edit', $pizza->id)
                      ->with('success', 'Pizza updated successfully');
@@ -96,6 +105,7 @@ class PizzaController extends Controller
     {
         $pizza = Pizza::findOrFail($id);
         $pizza->delete();
+        Cache::forget('pizzas_all');
         return redirect()->route('pizzas.index')->with('success', 'Pizza deleted successfully.');
 
     }

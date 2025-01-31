@@ -25,8 +25,9 @@ class Pizza extends Model
         return Attribute::get(function () {
             $total = $this->ingredients->sum('price'); 
             
-            return $total + ($total * 0.5) .'€';
+            return $total + ($total * 0.5);
         });
     }
+    
     
 }
