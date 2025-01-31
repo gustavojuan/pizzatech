@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
     <div class="container">
-        <a class="navbar-brand" href="{{ route('pizzas.index') }}">
+        <a class="navbar-brand" href="{{ route('welcome') }}">
             {{ __('PizzaTech') }}
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -19,6 +19,13 @@
                     <a class="nav-link {{ request()->routeIs('pizzas.index') ? 'active' : '' }}"
                         href="{{ route('pizzas.index') }}">
                         {{ __('Pizzas') }}
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('ingredients.index') ? 'active' : '' }}"
+                        href="{{ route('ingredients.index') }}">
+                        {{ __('Ingredients') }}
                     </a>
                 </li>
 
